@@ -15,6 +15,7 @@ import com.prajjawal.Trading_Platform.model.Order;
 import com.prajjawal.Trading_Platform.model.User;
 import com.prajjawal.Trading_Platform.model.Wallet;
 import com.prajjawal.Trading_Platform.model.WalletTransaction;
+import com.prajjawal.Trading_Platform.service.OrderService;
 import com.prajjawal.Trading_Platform.service.UserService;
 import com.prajjawal.Trading_Platform.service.WalletService;
 
