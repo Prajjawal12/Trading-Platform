@@ -11,7 +11,7 @@ import com.prajjawal.Trading_Platform.domain.ORDER_STATUS;
 import com.prajjawal.Trading_Platform.domain.ORDER_TYPE;
 import com.prajjawal.Trading_Platform.model.Asset;
 import com.prajjawal.Trading_Platform.model.Coin;
-import com.prajjawal.Trading_Platform.model.Order;
+import com.prajjawal.Trading_Platform.model.Orders;
 import com.prajjawal.Trading_Platform.model.OrderItem;
 import com.prajjawal.Trading_Platform.model.User;
 import com.prajjawal.Trading_Platform.repository.OrderItemRepository;
@@ -31,10 +31,10 @@ public class OrderServiceImple implements OrderService {
   private OrderItemRepository orderItemRepository;
 
   @Override
-  public Order createOrder(User user, OrderItem orderItem, ORDER_TYPE order_TYPE) {
+  public Orders createOrder(User user, OrderItem orderItem, ORDER_TYPE order_TYPE) {
 
     double price = orderItem.getCoin().getCurrentPrice() * orderItem.getQuantity();
-    Order order = new Order();
+    Orders order = new Orders();
     order.setUser(user);
     order.setOrderItem(orderItem);
     order.setOrder_TYPE(order_TYPE);
@@ -45,12 +45,12 @@ public class OrderServiceImple implements OrderService {
   }
 
   @Override
-  public Order getOrderById(Long orderId) throws Exception {
+  public Orders getOrderById(Long orderId) throws Exception {
     return orderRepository.findById(orderId).orElseThrow(() -> new Exception("Order Not Found"));
   }
 
   @Override
-  public List<Order> getAllOrdersOfUser(Long userId, ORDER_TYPE order_TYPE, String assetSymbol) {
+  public List<Orders> getAllOrdersOfUser(Long userId, ORDER_TYPE order_TYPE, String assetSymbol) {
     return orderRepository.findByUserId(userId);
   }
 
@@ -64,19 +64,19 @@ public class OrderServiceImple implements OrderService {
   }
 
   @Transactional
-  public Order buyAsset(Coin coin, double quantity, User user) throws Exception {
+  public Orders buyAsset(Coin coin, double quantity, User user) throws Exception {
     if (quantity <= 0) {
       throw new Exception("Quantity cannot be lesser than or equal to Zero");
 
     }
     double buyPrice = coin.getCurrentPrice();
     OrderItem orderItem = createOrderItem(coin, quantity, buyPrice, 0);
-    Order order = createOrder(user, orderItem, ORDER_TYPE.BUY);
+    Orders order = createOrder(user, orderItem, ORDER_TYPE.BUY);
     orderItem.setOrder(order);
     walletService.payOrderPayment(order, user);
     order.setStatus(ORDER_STATUS.SUCCESS);
     order.setOrder_TYPE(ORDER_TYPE.BUY);
-    Order savedOrder = orderRepository.save(order);
+    Orders savedOrder = orderRepository.save(order);
     Asset oldAsset = assetService.findAssetByUserIdAndCoinId(order.getUser().getId(),
         order.getOrderItem().getCoin().getId());
     if (oldAsset == null) {
@@ -89,7 +89,7 @@ public class OrderServiceImple implements OrderService {
 
   @SuppressWarnings("unused")
   @Transactional
-  public Order sellAsset(Coin coin, double quantity, User user) throws Exception {
+  public Orders sellAsset(Coin coin, double quantity, User user) throws Exception {
     if (quantity <= 0) {
       throw new Exception("Quantity cannot be lesser than or equal to Zero");
 
@@ -101,13 +101,13 @@ public class OrderServiceImple implements OrderService {
     if (assetToSell != null) {
       OrderItem orderItem = createOrderItem(coin, quantity, buyPrice, sellPrice);
 
-      Order order = createOrder(user, orderItem, ORDER_TYPE.SELL);
+      Orders order = createOrder(user, orderItem, ORDER_TYPE.SELL);
       orderItem.setOrder(order);
 
       if (assetToSell.getQuantity() >= quantity) {
         order.setStatus(ORDER_STATUS.SUCCESS);
         order.setOrder_TYPE(ORDER_TYPE.SELL);
-        Order savedOrder = orderRepository.save(order);
+        Orders savedOrder = orderRepository.save(order);
         walletService.payOrderPayment(order, user);
         Asset updatedAsset = assetService.updateAsset(assetToSell.getId(), -quantity);
 
@@ -125,7 +125,7 @@ public class OrderServiceImple implements OrderService {
 
   @Override
   @Transactional
-  public Order processOrder(Coin coin, double quantity, ORDER_TYPE order_TYPE, User user) throws Exception {
+  public Orders processOrder(Coin coin, double quantity, ORDER_TYPE order_TYPE, User user) throws Exception {
 
     if (order_TYPE.equals(ORDER_TYPE.BUY)) {
       return buyAsset(coin, quantity, user);

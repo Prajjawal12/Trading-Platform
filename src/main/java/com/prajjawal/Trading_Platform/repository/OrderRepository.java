@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.prajjawal.Trading_Platform.model.Order;
+import com.prajjawal.Trading_Platform.model.Orders;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
-  List<Order> findByUserId(Long userId);
+public interface OrderRepository extends JpaRepository<Orders, Long> {
+  List<Orders> findByUserId(Long userId);
 }

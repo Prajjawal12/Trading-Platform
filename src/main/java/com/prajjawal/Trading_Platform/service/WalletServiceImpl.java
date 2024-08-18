@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.prajjawal.Trading_Platform.domain.ORDER_TYPE;
-import com.prajjawal.Trading_Platform.model.Order;
+import com.prajjawal.Trading_Platform.model.Orders;
 import com.prajjawal.Trading_Platform.model.User;
 import com.prajjawal.Trading_Platform.model.Wallet;
 import com.prajjawal.Trading_Platform.repository.WalletRepository;
@@ -61,7 +61,7 @@ public class WalletServiceImpl implements WalletService {
   }
 
   @Override
-  public Wallet payOrderPayment(Order order, User user) throws Exception {
+  public Wallet payOrderPayment(Orders order, User user) throws Exception {
     Wallet wallet = getUserWallet(user);
     if (order.getOrder_TYPE().equals(ORDER_TYPE.BUY)) {
       BigDecimal newBalance = wallet.getBalance().subtract(order.getPrice());

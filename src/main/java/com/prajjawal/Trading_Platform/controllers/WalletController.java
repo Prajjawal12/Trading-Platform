@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.prajjawal.Trading_Platform.model.Order;
+import com.prajjawal.Trading_Platform.model.Orders;
 import com.prajjawal.Trading_Platform.model.User;
 import com.prajjawal.Trading_Platform.model.Wallet;
 import com.prajjawal.Trading_Platform.model.WalletTransaction;
@@ -61,7 +61,7 @@ public class WalletController {
       @PathVariable Long orderId,
       @RequestBody WalletTransaction req) throws Exception {
     User user = userService.findUserProfileByJwt(jwt);
-    Order order = orderService.getOrderById(orderId);
+    Orders order = orderService.getOrderById(orderId);
 
     Wallet wallet = walletService.payOrderPayment(order, user);
 
