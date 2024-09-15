@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -44,9 +43,23 @@ public class UserController {
   @Autowired
   private ForgotPasswordService forgotPasswordService;
 
+  @GetMapping("/api/users/{id}")
+  public ResponseEntity<User> getUserProfileById(@PathVariable("id") Long id) throws Exception {
+    try {
+      User user = userService.findUserById(id);
+      if (user != null) {
+        return new ResponseEntity<>(user, HttpStatus.OK);
+      } else {
+        throw new Exception("User not found!");
+      }
+    } catch (Exception e) {
+      throw new Exception("Error retrieving user: " + e.getMessage());
+    }
+  }
+
   @GetMapping("/api/users/profile")
   public ResponseEntity<User> getUserProfile(
-      @RequestHeader("Authurization") String jwt) throws Exception {
+      @RequestHeader("Authorization") String jwt) throws Exception {
     User user = userService.findUserProfileByJwt(jwt);
 
     return new ResponseEntity<>(user, HttpStatus.OK);
